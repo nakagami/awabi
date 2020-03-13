@@ -11,6 +11,7 @@ For example, for debian/ubuntu
 
 ```
 $ sudo apt install mecab
+$ cargo install awabi
 ```
 
 ## How to use
