@@ -4,6 +4,13 @@ version = "0.1.0"
 authors = ["Hajime Nakagami <nakagami@gmail.com>"]
 edition = "2018"
 
+license = "BSD-3-Clause"
+license-file = "LICENSE"
+description = "A morphological analyzer using mecab dictionary"
+repository = "https://github.com/nakagami/awabi"
+readme = "README.md"
+keywords = ["mecab"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
