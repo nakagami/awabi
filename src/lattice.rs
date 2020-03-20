@@ -288,7 +288,7 @@ impl BackwardPath {
 
 impl Ord for BackwardPath {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.total_cost().cmp(&other.total_cost())
+        other.total_cost().cmp(&self.total_cost())
     }
 }
 
