@@ -22,6 +22,8 @@
 *SOFTWARE.
 */
 use super::dic::{DicEntry, Matrix};
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -101,6 +103,12 @@ impl Node {
             None => self.pos != 0,
         }
     }
+    fn node_len(&self) -> i32 {
+        match &self.entry {
+            Some(e) => e.original.as_bytes().len() as i32,
+            None => 1,
+        }
+    }
 
     pub fn get_dic_entry(&self) -> DicEntry {
         let d = &self.entry.as_ref().unwrap();
@@ -161,11 +169,7 @@ impl Lattice {
         node.back_index = best_node.index;
         node.back_pos = best_node.pos;
         node.pos = self.p;
-        let ln = match &node.entry {
-            Some(e) => e.original.as_bytes().len(),
-            None => 1,
-        } as i32;
-        node.epos = self.p + ln;
+        node.epos = self.p + node.node_len();
 
         node.index = self.snodes[self.p as usize].len() as i32;
 
@@ -207,5 +211,97 @@ impl Lattice {
 
         shortest_path.reverse();
         shortest_path
+    }
+
+    pub fn backward_astar(&self, mut n: i32, matrix: &Matrix) -> Vec<Vec<Rc<Node>>> {
+        let mut paths: Vec<Vec<Rc<Node>>> = Vec::new();
+        let epos: i32 = self.enodes.len() as i32 - 1;
+        let node = &self.enodes[epos as usize][0];
+        assert!(&node.is_eos());
+
+        let mut pq: BinaryHeap<BackwardPath> = BinaryHeap::new();
+        pq.push(BackwardPath::new(Rc::clone(&node), None, matrix));
+
+        while pq.len() > 0 && n > 0 {
+            let bp = pq.pop().unwrap();
+            if bp.is_complete() {
+                let mut path = bp.back_path;
+                path.reverse();
+                paths.push(path);
+                n -= 1;
+            } else {
+                let new_node = &bp.back_path[&bp.back_path.len() - 1];
+                let epos = new_node.epos - new_node.node_len();
+                for node in self.enodes[epos as usize].iter() {
+                    pq.push(BackwardPath::new(Rc::clone(&node), Some(&bp), matrix));
+                }
+            }
+        }
+
+        paths
+    }
+}
+
+#[derive(Debug)]
+struct BackwardPath {
+    cost_from_bos: i32,
+    cost_from_eos: i32,
+    back_path: Vec<Rc<Node>>,
+}
+
+impl BackwardPath {
+    pub fn new(node: Rc<Node>, right_path: Option<&BackwardPath>, matrix: &Matrix) -> BackwardPath {
+        let cost_from_bos = node.min_cost;
+        let mut cost_from_eos = 0;
+        let mut back_path: Vec<Rc<Node>> = Vec::new();
+
+        if let Some(base_path) = right_path {
+            let neighbor_node = &base_path.back_path[&base_path.back_path.len() - 1];
+            cost_from_eos = base_path.cost_from_eos
+                + neighbor_node.cost
+                + matrix.get_trans_cost(node.right_id as u16, neighbor_node.left_id as u16);
+            // copy base_path to back_path
+            for node in base_path.back_path.iter() {
+                back_path.push(Rc::clone(&node));
+            }
+        } else {
+            assert!(&node.is_eos());
+        }
+
+        back_path.push(Rc::clone(&node));
+
+        BackwardPath {
+            cost_from_bos,
+            cost_from_eos,
+            back_path,
+        }
+    }
+
+    fn total_cost(&self) -> i32 {
+        self.cost_from_bos + self.cost_from_eos
+    }
+
+    fn is_complete(&self) -> bool {
+        self.back_path[&self.back_path.len() - 1].is_bos()
+    }
+}
+
+impl Ord for BackwardPath {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.total_cost().cmp(&other.total_cost())
+    }
+}
+
+impl Eq for BackwardPath {}
+
+impl PartialOrd for BackwardPath {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for BackwardPath {
+    fn eq(&self, other: &Self) -> bool {
+        self.total_cost() == other.total_cost()
     }
 }

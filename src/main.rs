@@ -22,14 +22,42 @@
 *SOFTWARE.
 */
 use awabi::tokenizer;
+use clap::{App, Arg, SubCommand};
 use std::io;
 
+fn print_tokens(tokens: &Vec<(String, String)>) {
+    for t in tokens.iter() {
+        println!("{}\t{}", t.0, t.1);
+    }
+    println!("EOS");
+}
+
 fn main() {
-    let mut s = String::new();
-    io::stdin().read_line(&mut s).unwrap();
+    let app = App::new("awabi").arg(
+        Arg::with_name("nbest")
+            .help("output N best results")
+            .short("N")
+            .long("nbest")
+            .takes_value(true),
+    );
+
+    let matches = app.get_matches();
+    let mut nbest = 1;
+    if let Some(n_best) = matches.value_of("nbest") {
+        nbest = n_best.parse().unwrap();
+    }
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let s = input.trim_end();
 
     let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
-    for t in tokenizer.tokenize(s.trim_end()).iter() {
-        println!("{}\t{}", t.0, t.1);
+
+    if nbest == 1 {
+        print_tokens(&tokenizer.tokenize(s));
+    } else {
+        for tokens in tokenizer.tokenize_n_best(s, nbest).iter() {
+            print_tokens(tokens);
+        }
     }
 }

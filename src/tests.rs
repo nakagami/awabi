@@ -93,3 +93,15 @@ fn test_tokenizer() {
         ]
     );
 }
+
+#[test]
+fn test_tokenize_n_best() {
+    let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
+
+    assert_eq!(
+        tokenizer
+            .tokenize_n_best("すもももももももものうち", 3)
+            .len(),
+        3
+    );
+}

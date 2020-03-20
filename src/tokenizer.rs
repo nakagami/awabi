@@ -122,4 +122,21 @@ impl Tokenizer {
         }
         entries
     }
+
+    pub fn tokenize_n_best(&self, s: &str, n: i32) -> Vec<Vec<(String, String)>> {
+        let lattice = self.build_lattice(s);
+        let nodes_vec = lattice.backward_astar(n, &self.matrix);
+        let mut entries_vec: Vec<Vec<(String, String)>> = Vec::new();
+        for nodes in nodes_vec.iter() {
+            // TODO: convert nodes_vec to entries_vec
+            let mut entries: Vec<(String, String)> = Vec::new();
+            for i in 1..nodes.len() - 1 {
+                let d = nodes[i].get_dic_entry();
+                entries.push((d.original, d.feature));
+            }
+            entries_vec.push(entries);
+        }
+
+        entries_vec
+    }
 }
