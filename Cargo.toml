@@ -4,7 +4,7 @@ version = "0.2.0"
 authors = ["Hajime Nakagami <nakagami@gmail.com>"]
 edition = "2018"
 
-license-file = "LICENSE"
+license = "MIT"
 description = "A morphological analyzer using mecab dictionary"
 repository = "https://github.com/nakagami/awabi"
 readme = "README.md"
