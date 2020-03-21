@@ -213,7 +213,7 @@ impl Lattice {
         shortest_path
     }
 
-    pub fn backward_astar(&self, mut n: i32, matrix: &Matrix) -> Vec<Vec<Rc<Node>>> {
+    pub fn backward_astar(&self, mut n: u32, matrix: &Matrix) -> Vec<Vec<Rc<Node>>> {
         let mut paths: Vec<Vec<Rc<Node>>> = Vec::new();
         let epos: i32 = self.enodes.len() as i32 - 1;
         let node = &self.enodes[epos as usize][0];

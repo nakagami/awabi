@@ -123,7 +123,7 @@ impl Tokenizer {
         entries
     }
 
-    pub fn tokenize_n_best(&self, s: &str, n: i32) -> Vec<Vec<(String, String)>> {
+    pub fn tokenize_n_best(&self, s: &str, n: u32) -> Vec<Vec<(String, String)>> {
         let lattice = self.build_lattice(s);
         let nodes_vec = lattice.backward_astar(n, &self.matrix);
         let mut entries_vec: Vec<Vec<(String, String)>> = Vec::new();
