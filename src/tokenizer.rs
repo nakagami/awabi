@@ -45,21 +45,20 @@ impl Tokenizer {
             mecabrc::find_mecabrc().expect("Can't find mecabrc")
         };
 
-        let rc = mecabrc::rc_map(&path)?;
-        let dicdir = &rc[&String::from("dicdir")];
+        let rc_map = mecabrc::rc_map(&path)?;
 
-        let sys_dic = dic::MeCabDic::open(&format!("{}/sys.dic", dicdir)).unwrap();
-        let user_dic: Option<dic::MeCabDic> =
-            if let Some(userdic_path) = rc.get(&String::from("userdic")) {
-                Some(dic::MeCabDic::open(userdic_path).unwrap())
-            } else {
-                None
-            };
+        let sys_dic = dic::MeCabDic::open(&mecabrc::get_dic_path(&rc_map, "sys.dic")).unwrap();
+        let user_dic: Option<dic::MeCabDic> = if let Some(userdic_path) = rc_map.get("userdic") {
+            Some(dic::MeCabDic::open(userdic_path).unwrap())
+        } else {
+            None
+        };
 
-        let char_property = dic::CharProperty::open(&format!("{}/char.bin", dicdir)).unwrap();
-        let unk_dic = dic::MeCabDic::open(&format!("{}/unk.dic", dicdir)).unwrap();
+        let char_property =
+            dic::CharProperty::open(&mecabrc::get_dic_path(&rc_map, "char.bin")).unwrap();
+        let unk_dic = dic::MeCabDic::open(&mecabrc::get_dic_path(&rc_map, "unk.dic")).unwrap();
 
-        let matrix = dic::Matrix::open(&format!("{}/matrix.bin", dicdir)).unwrap();
+        let matrix = dic::Matrix::open(&mecabrc::get_dic_path(&rc_map, "matrix.bin")).unwrap();
 
         Ok(Tokenizer {
             sys_dic,

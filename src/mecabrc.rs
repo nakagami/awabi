@@ -56,7 +56,7 @@ pub fn rc_map(path: &str) -> Result<HashMap<String, String>, io::Error> {
     Ok(rc)
 }
 
-pub fn get_dic_pathname(rc_map: &HashMap<String, String>, filename: &str) -> String {
+pub fn get_dic_path(rc_map: &HashMap<String, String>, filename: &str) -> String {
     let dirname = &rc_map[&String::from("dicdir")];
     let mut s = String::from(dirname);
     s.push_str("/");
