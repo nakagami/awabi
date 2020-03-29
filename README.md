@@ -9,18 +9,17 @@ See also python wrapper `pyawabi` https://github.com/nakagami/pyawabi .
 MeCab
 https://taku910.github.io/mecab/
 
-For example,
-
-Debian/Ubuntu
+### Debian/Ubuntu
 ```
 $ sudo apt install mecab
 $ cargo install awabi
 ```
 
-Mac OS X (homebrew)
+### Mac OS X (homebrew)
 ```
 $ brew install mecab
 $ brew install mecab-ipadic
+$ cargo install awabi
 ```
 
 ## How to use
