@@ -30,6 +30,7 @@ use std::i32;
 use std::str;
 use std::u16;
 use std::u32;
+use super::*;
 
 fn unpack_u32(mmap: &Mmap, i: usize) -> u32 {
     u32::from_le_bytes([mmap[i], mmap[i + 1], mmap[i + 2], mmap[i + 3]])
@@ -394,7 +395,9 @@ fn test_dic_open() {
         MeCabDic::open("/something/wrong/path/sys.dic").is_err(),
         "Error not occured."
     );
-    let result = MeCabDic::open("/var/lib/mecab/dic/ipadic-utf8/sys.dic");
+
+    let rc_map = mecabrc::rc_map(&mecabrc::find_mecabrc().unwrap()).unwrap();
+    let result = MeCabDic::open(&mecabrc::get_dic_pathname(&rc_map, "sys.dic"));
     assert!(!result.is_err(), "Can't open dict file.");
     let sys_dic = result.unwrap();
     assert_eq!(sys_dic.dic_size, 49199027);
@@ -402,7 +405,9 @@ fn test_dic_open() {
 
 #[test]
 fn test_char_property() {
-    let cp = CharProperty::open("/var/lib/mecab/dic/ipadic-utf8/char.bin").unwrap();
+
+    let rc_map = mecabrc::rc_map(&mecabrc::find_mecabrc().unwrap()).unwrap();
+    let cp = CharProperty::open(&mecabrc::get_dic_pathname(&rc_map, "char.bin")).unwrap();
 
     assert_eq!(
         cp.category_names,
@@ -434,7 +439,8 @@ fn test_char_property() {
 
 #[test]
 fn test_get_trans_cost() {
-    let matrix = Matrix::open("/var/lib/mecab/dic/ipadic-utf8/matrix.bin").unwrap();
+    let rc_map = mecabrc::rc_map(&mecabrc::find_mecabrc().unwrap()).unwrap();
+    let matrix = Matrix::open(&mecabrc::get_dic_pathname(&rc_map, "matrix.bin")).unwrap();
     assert_eq!(matrix.get_trans_cost(555, 1283), 340);
     assert_eq!(matrix.get_trans_cost(10, 1293), -1376);
 }
@@ -448,7 +454,8 @@ fn assert_entry(e: &DicEntry, lc_attr: u16, rc_attr: u16, posid: u16, wcost: i16
 
 #[test]
 fn test_lookup() {
-    let sys_dic = MeCabDic::open("/var/lib/mecab/dic/ipadic-utf8/sys.dic").unwrap();
+    let rc_map = mecabrc::rc_map(&mecabrc::find_mecabrc().unwrap()).unwrap();
+    let sys_dic = MeCabDic::open(&mecabrc::get_dic_pathname(&rc_map, "sys.dic")).unwrap();
     let sb = "すもももももももものうち".as_bytes();
 
     let r = sys_dic.common_prefix_search(&sb[0..]);
@@ -472,8 +479,9 @@ fn test_lookup() {
 
 #[test]
 fn test_lookup_unknowns() {
-    let unk_dic = MeCabDic::open("/var/lib/mecab/dic/ipadic-utf8/unk.dic").unwrap();
-    let cp = CharProperty::open("/var/lib/mecab/dic/ipadic-utf8/char.bin").unwrap();
+    let rc_map = mecabrc::rc_map(&mecabrc::find_mecabrc().unwrap()).unwrap();
+    let unk_dic = MeCabDic::open(&mecabrc::get_dic_pathname(&rc_map, "unk.dic")).unwrap();
+    let cp = CharProperty::open(&mecabrc::get_dic_pathname(&rc_map, "char.bin")).unwrap();
 
     assert_eq!(unk_dic.exact_match_search(b"SPACE"), 9729);
 

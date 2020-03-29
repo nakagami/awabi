@@ -45,7 +45,7 @@ impl Tokenizer {
             mecabrc::find_mecabrc().expect("Can't find mecabrc")
         };
 
-        let rc = mecabrc::read(&path)?;
+        let rc = mecabrc::rc_map(&path)?;
         let dicdir = &rc[&String::from("dicdir")];
 
         let sys_dic = dic::MeCabDic::open(&format!("{}/sys.dic", dicdir)).unwrap();

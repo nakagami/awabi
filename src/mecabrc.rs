@@ -39,7 +39,7 @@ pub fn find_mecabrc() -> Option<String> {
     None
 }
 
-pub fn read(path: &str) -> Result<HashMap<String, String>, io::Error> {
+pub fn rc_map(path: &str) -> Result<HashMap<String, String>, io::Error> {
     let mut rc: HashMap<String, String> = HashMap::new();
     let re = Regex::new(r"^(\S+)\s*=\s*(\S+)").unwrap();
 
@@ -56,8 +56,16 @@ pub fn read(path: &str) -> Result<HashMap<String, String>, io::Error> {
     Ok(rc)
 }
 
+pub fn get_dic_pathname(rc_map: &HashMap<String, String>, filename: &str) -> String{
+    let dirname = &rc_map[&String::from("dicdir")];
+    let mut s = String::from(dirname);
+    s.push_str("/");
+    s.push_str(filename);
+    s
+}
+
 #[test]
 fn test_mecabrc() {
-    let map = read(&find_mecabrc().unwrap()).unwrap();
-    assert_ne!(map.get(&String::from("dicdir")), None);
+    let rc_map = rc_map(&find_mecabrc().unwrap()).unwrap();
+    assert_ne!(rc_map.get(&String::from("dicdir")), None);
 }
