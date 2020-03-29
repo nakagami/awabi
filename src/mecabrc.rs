@@ -26,8 +26,18 @@ use std::fs::File;
 use std::io;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::path::Path;
 
 use regex::Regex;
+
+pub fn find_mecabrc() -> Option<String> {
+    for path in vec!["/usr/local/etc/mecabrc", "/etc/mecabrc"] {
+        if Path::new(path).exists() {
+            return Some(path.to_string());
+        }
+    }
+    None
+}
 
 pub fn read(path: &str) -> Result<HashMap<String, String>, io::Error> {
     let mut rc: HashMap<String, String> = HashMap::new();
@@ -48,9 +58,6 @@ pub fn read(path: &str) -> Result<HashMap<String, String>, io::Error> {
 
 #[test]
 fn test_mecabrc() {
-    let map = read("/etc/mecabrc").unwrap();
-    assert_eq!(
-        map.get(&String::from("dicdir")),
-        Some(&String::from("/var/lib/mecab/dic/debian"))
-    );
+    let map = read(&find_mecabrc().unwrap()).unwrap();
+    assert_ne!(map.get(&String::from("dicdir")), None);
 }

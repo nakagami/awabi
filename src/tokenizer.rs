@@ -39,10 +39,12 @@ pub struct Tokenizer {
 
 impl Tokenizer {
     pub fn new(mecabrc_path: Option<String>) -> Result<Tokenizer, std::io::Error> {
-        let path = match mecabrc_path {
-            Some(s) => s,
-            None => "/etc/mecabrc".to_string(),
+        let path = if let Some(s) = mecabrc_path {
+            s
+        } else {
+            mecabrc::find_mecabrc().expect("Can't find mecabrc")
         };
+
         let rc = mecabrc::read(&path)?;
         let dicdir = &rc[&String::from("dicdir")];
 
