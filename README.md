@@ -4,10 +4,9 @@
 
 See also python wrapper `pyawabi` https://github.com/nakagami/pyawabi .
 
-## Requirements
+## Requirements and how to install
 
-MeCab
-https://taku910.github.io/mecab/
+MeCab https://taku910.github.io/mecab/ and related dictionary is required.
 
 ### Debian/Ubuntu
 ```
