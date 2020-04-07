@@ -298,23 +298,12 @@ impl MeCabDic {
     fn get_entries_by_index(&self, idx: u32, count: u32, s: &str) -> Vec<DicEntry> {
         let mut results: Vec<DicEntry> = Vec::new();
         for i in 0..count {
-            let lc_attr = unpack_u16(&self.mmap, (self.token_offset + (idx + i) * 16) as usize);
-            let rc_attr = unpack_u16(
-                &self.mmap,
-                (self.token_offset + (idx + i) * 16 + 2) as usize,
-            );
-            let posid = unpack_u16(
-                &self.mmap,
-                (self.token_offset + (idx + i) * 16 + 4) as usize,
-            );
-            let wcost = unpack_i16(
-                &self.mmap,
-                (self.token_offset + (idx + i) * 16 + 6) as usize,
-            );
-            let feature = unpack_u32(
-                &self.mmap,
-                (self.token_offset + (idx + i) * 16 + 8) as usize,
-            );
+            let offset: usize = (self.token_offset + (idx + i) * 16) as usize;
+            let lc_attr = unpack_u16(&self.mmap, offset);
+            let rc_attr = unpack_u16(&self.mmap, offset + 2);
+            let posid = unpack_u16(&self.mmap, offset + 4);
+            let wcost = unpack_i16(&self.mmap, offset + 6);
+            let feature = unpack_u32(&self.mmap, offset + 8);
             let feature = unpack_string(&self.mmap, (self.feature_offset + feature) as usize);
             results.push(DicEntry {
                 original: s.to_string(),
