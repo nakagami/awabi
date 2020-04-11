@@ -54,3 +54,7 @@ EOS
 EOS
 ```
 
+## See also
+
+- goawabi https://github.com/nakagami/goawabi Go implementation
+- pyawabi https://github.com/nakagami/pyawabi Python wrapper
