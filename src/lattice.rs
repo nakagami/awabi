@@ -284,6 +284,24 @@ impl BackwardPath {
     fn is_complete(&self) -> bool {
         self.back_path[&self.back_path.len() - 1].is_bos()
     }
+
+    fn print_path(&self) {
+        // for debug
+        println!("total_cost={}", self.total_cost());
+        for node in self.back_path.iter() {
+            if node.is_bos() {
+                println!("\tBOS");
+            } else if node.is_eos() {
+                println!("\tEOS");
+            } else {
+                println!(
+                    "\t{}\t{}",
+                    node.entry.as_ref().unwrap().original,
+                    node.entry.as_ref().unwrap().feature
+                );
+            }
+        }
+    }
 }
 
 impl Ord for BackwardPath {
