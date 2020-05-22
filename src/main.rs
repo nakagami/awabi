@@ -22,7 +22,7 @@
 *SOFTWARE.
 */
 use awabi::tokenizer;
-use clap::{App, Arg, SubCommand};
+use clap::{App, Arg};
 use std::io;
 
 fn print_tokens(tokens: &Vec<(String, String)>) {

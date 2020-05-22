@@ -23,7 +23,6 @@
 */
 extern crate memmap;
 
-use super::*;
 use memmap::{Mmap, MmapOptions};
 use std::fs::File;
 use std::i16;
@@ -31,6 +30,9 @@ use std::i32;
 use std::str;
 use std::u16;
 use std::u32;
+
+#[allow(unused_imports)]
+use super::*;
 
 fn unpack_u32(mmap: &Mmap, i: usize) -> u32 {
     u32::from_le_bytes([mmap[i], mmap[i + 1], mmap[i + 2], mmap[i + 3]])
@@ -70,7 +72,7 @@ fn utf8_to_ucs2(s: &[u8], index: usize) -> (u16, usize) {
         0
     };
 
-    let mut ch32: u32 = 0;
+    let mut ch32: u32;
     match ln {
         1 => ch32 = s[index + 0] as u32,
         2 => {
@@ -433,6 +435,7 @@ fn test_get_trans_cost() {
     assert_eq!(matrix.get_trans_cost(10, 1293), -1376);
 }
 
+#[allow(dead_code)]
 fn assert_entry(e: &DicEntry, lc_attr: u16, rc_attr: u16, posid: u16, wcost: i16) {
     assert_eq!(e.lc_attr, lc_attr);
     assert_eq!(e.rc_attr, rc_attr);

@@ -285,6 +285,7 @@ impl BackwardPath {
         self.back_path[&self.back_path.len() - 1].is_bos()
     }
 
+    #[allow(dead_code)]
     fn print_path(&self) {
         // for debug
         println!("total_cost={}", self.total_cost());
