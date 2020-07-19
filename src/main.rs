@@ -23,7 +23,7 @@
 */
 use awabi::tokenizer;
 use clap::{App, Arg};
-use std::io;
+use std::io::{self, Read};
 
 fn print_tokens(tokens: &Vec<(String, String)>) {
     for t in tokens.iter() {
@@ -47,16 +47,15 @@ fn main() {
         nbest = n_best.parse().unwrap();
     }
 
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    let s = input.trim_end();
+    let mut s = String::new();
+    io::stdin().read_to_string(&mut s).unwrap();
 
     let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
 
     if nbest == 1 {
-        print_tokens(&tokenizer.tokenize(s));
+        print_tokens(&tokenizer.tokenize(&s));
     } else {
-        for tokens in tokenizer.tokenize_n_best(s, nbest).iter() {
+        for tokens in tokenizer.tokenize_n_best(&s, nbest).iter() {
             print_tokens(tokens);
         }
     }
