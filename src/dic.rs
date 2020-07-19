@@ -31,6 +31,8 @@ use std::str;
 use std::u16;
 use std::u32;
 
+const MAX_GROUPING_SIZE: u32 = 24;
+
 #[allow(unused_imports)]
 use super::*;
 
@@ -154,7 +156,7 @@ impl CharProperty {
         )
     }
 
-    pub fn get_group_length(&self, s: &[u8], default_type: u32, max_count: u32) -> usize {
+    pub fn get_group_length(&self, s: &[u8], default_type: u32) -> usize {
         // aggregate same char types and return length
         let mut i: usize = 0;
         let mut char_count: u32 = 0;
@@ -166,7 +168,7 @@ impl CharProperty {
             if ((1 << default_type) & t) != 0 {
                 i += ln;
                 char_count += 1;
-                if max_count != 0 && max_count == char_count {
+                if char_count == MAX_GROUPING_SIZE {
                     break;
                 }
             } else {
@@ -192,7 +194,7 @@ impl CharProperty {
         let (ch16, _ln) = utf8_to_ucs2(s, 0);
         let (default_type, _, count, group, invoke) = self.get_char_info(ch16);
         if group != 0 {
-            ln_vec.push(self.get_group_length(s, default_type, count));
+            ln_vec.push(self.get_group_length(s, default_type));
         } else {
             ln_vec.push(self.get_count_length(s, count));
         }
