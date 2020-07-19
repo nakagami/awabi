@@ -178,14 +178,23 @@ impl CharProperty {
         i
     }
 
-    pub fn get_count_length(&self, s: &[u8], count: u32) -> usize {
+    pub fn get_count_length(&self, s: &[u8], default_type: u32, count: u32) -> isize {
         // get char count bytes length
         let mut i: usize = 0;
         for _ in 0..count {
-            let (_ch16, ln) = utf8_to_ucs2(s, i);
+            if i >= s.len() {
+                return -1;
+            }
+            let (ch16, ln) = utf8_to_ucs2(s, i);
+            // default_type, type, count, group, invoke
+            let (_, t, _, _, _) = self.get_char_info(ch16);
+            if ((1 << default_type) & t) == 0 {
+                return -1;
+            }
+
             i += ln;
         }
-        i
+        i as isize
     }
 
     pub fn get_unknown_lengths(&self, s: &[u8]) -> (u32, Vec<usize>, bool) {
@@ -195,8 +204,15 @@ impl CharProperty {
         let (default_type, _, count, group, invoke) = self.get_char_info(ch16);
         if group != 0 {
             ln_vec.push(self.get_group_length(s, default_type));
-        } else {
-            ln_vec.push(self.get_count_length(s, count));
+        }
+        if count != 0 {
+            for n in 0..count {
+                let ln = self.get_count_length(s, default_type, n+1);
+                if ln < 0 {
+                    break;
+                }
+                ln_vec.push(ln as usize);
+            }
         }
 
         // type, vector of length, invoke always flag
