@@ -47,16 +47,18 @@ fn main() {
         nbest = n_best.parse().unwrap();
     }
 
-    let mut s = String::new();
-    io::stdin().read_to_string(&mut s).unwrap();
+    let mut lines = String::new();
+    io::stdin().read_to_string(&mut lines).unwrap();
 
-    let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
+    for s in lines.split("\n") {
+        let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
 
-    if nbest == 1 {
-        print_tokens(&tokenizer.tokenize(&s));
-    } else {
-        for tokens in tokenizer.tokenize_n_best(&s, nbest).iter() {
-            print_tokens(tokens);
+        if nbest == 1 {
+            print_tokens(&tokenizer.tokenize(s));
+        } else {
+            for tokens in tokenizer.tokenize_n_best(s, nbest).iter() {
+                print_tokens(tokens);
+            }
         }
     }
 }

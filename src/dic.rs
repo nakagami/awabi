@@ -207,7 +207,7 @@ impl CharProperty {
         }
         if count != 0 {
             for n in 0..count {
-                let ln = self.get_count_length(s, default_type, n+1);
+                let ln = self.get_count_length(s, default_type, n + 1);
                 if ln < 0 {
                     break;
                 }
