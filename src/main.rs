@@ -49,6 +49,7 @@ fn main() {
 
     let mut lines = String::new();
     io::stdin().read_to_string(&mut lines).unwrap();
+    lines = lines.trim_end().to_string();
 
     for s in lines.split("\n") {
         let tokenizer = tokenizer::Tokenizer::new(None).unwrap();

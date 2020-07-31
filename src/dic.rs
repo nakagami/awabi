@@ -156,7 +156,7 @@ impl CharProperty {
         )
     }
 
-    pub fn get_group_length(&self, s: &[u8], default_type: u32) -> usize {
+    pub fn get_group_length(&self, s: &[u8], default_type: u32) -> isize {
         // aggregate same char types and return length
         let mut i: usize = 0;
         let mut char_count: u32 = 0;
@@ -168,14 +168,14 @@ impl CharProperty {
             if ((1 << default_type) & t) != 0 {
                 i += ln;
                 char_count += 1;
-                if char_count == MAX_GROUPING_SIZE {
-                    break;
+                if char_count > MAX_GROUPING_SIZE + 1 {
+                    return -1;
                 }
             } else {
                 break;
             }
         }
-        i
+        i as isize
     }
 
     pub fn get_count_length(&self, s: &[u8], default_type: u32, count: u32) -> isize {
@@ -200,10 +200,13 @@ impl CharProperty {
     pub fn get_unknown_lengths(&self, s: &[u8]) -> (u32, Vec<usize>, bool) {
         // get unknown word bytes length vector
         let mut ln_vec: Vec<usize> = Vec::new();
-        let (ch16, _ln) = utf8_to_ucs2(s, 0);
+        let (ch16, first_ln) = utf8_to_ucs2(s, 0);
         let (default_type, _, count, group, invoke) = self.get_char_info(ch16);
         if group != 0 {
-            ln_vec.push(self.get_group_length(s, default_type));
+            let ln = self.get_group_length(s, default_type);
+            if ln > 0 {
+                ln_vec.push(ln as usize);
+            }
         }
         if count != 0 {
             for n in 0..count {
@@ -213,6 +216,10 @@ impl CharProperty {
                 }
                 ln_vec.push(ln as usize);
             }
+        }
+
+        if ln_vec.len() == 0 {
+            ln_vec.push(first_ln);
         }
 
         // type, vector of length, invoke always flag
