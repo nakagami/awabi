@@ -365,10 +365,10 @@ impl MeCabDic {
 
     pub fn lookup_unknowns(&self, s: &[u8], cp: &CharProperty) -> (Vec<DicEntry>, bool) {
         let (default_type, ln_vec, invoke) = cp.get_unknown_lengths(s);
-        let index = self.exact_match_search(cp.category_names[default_type as usize].as_bytes());
+        let result = self.exact_match_search(cp.category_names[default_type as usize].as_bytes());
         let mut results: Vec<DicEntry> = Vec::new();
         for i in ln_vec {
-            let mut new_results = self.get_entries(index as u32, str::from_utf8(&s[..i]).unwrap());
+            let mut new_results = self.get_entries(result as u32, str::from_utf8(&s[..i]).unwrap());
             results.append(&mut new_results);
         }
         (results, invoke)
