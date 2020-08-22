@@ -38,6 +38,7 @@ pub struct Node {
     min_cost: i32,
     back_pos: i32,
     back_index: i32,
+    skip: bool,
 }
 
 impl Node {
@@ -53,6 +54,7 @@ impl Node {
             min_cost: 0,
             back_pos: -1,
             back_index: -1,
+            skip: false,
         }
     }
 
@@ -68,6 +70,7 @@ impl Node {
             min_cost: 0x7FFFFFFF,
             back_pos: -1,
             back_index: -1,
+            skip: false,
         }
     }
 
@@ -76,6 +79,7 @@ impl Node {
         let left_id: i32 = e.lc_attr as i32;
         let right_id: i32 = e.rc_attr as i32;
         let cost: i32 = e.wcost as i32;
+        let skip: bool = e.skip;
 
         Node {
             entry: Some(e),
@@ -88,6 +92,7 @@ impl Node {
             min_cost: 0x7FFFFFFF,
             back_pos: -1,
             back_index: -1,
+            skip,
         }
     }
 
@@ -119,6 +124,7 @@ impl Node {
             posid: d.posid,
             wcost: d.wcost,
             feature: String::from(&d.feature),
+            skip: d.skip,
         }
     }
 }
@@ -157,11 +163,22 @@ impl Lattice {
         let mut best_node = &self.enodes[self.p as usize][0];
 
         for enode in &self.enodes[self.p as usize] {
-            let cost =
-                enode.min_cost + matrix.get_trans_cost(enode.right_id as u16, node.left_id as u16);
-            if cost < min_cost {
-                min_cost = cost;
-                best_node = enode;
+            if enode.skip {
+                for enode2 in &self.enodes[enode.pos as usize] {
+                    let cost = enode2.min_cost
+                        + matrix.get_trans_cost(enode2.right_id as u16, node.left_id as u16);
+                    if cost < min_cost {
+                        min_cost = cost;
+                        best_node = enode2;
+                    }
+                }
+            } else {
+                let cost = enode.min_cost
+                    + matrix.get_trans_cost(enode.right_id as u16, node.left_id as u16);
+                if cost < min_cost {
+                    min_cost = cost;
+                    best_node = enode;
+                }
             }
         }
 

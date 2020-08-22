@@ -118,6 +118,7 @@ pub struct DicEntry {
     pub posid: u16,
     pub wcost: i16,
     pub feature: String,
+    pub skip: bool,
 }
 
 #[derive(Debug)]
@@ -322,7 +323,7 @@ impl MeCabDic {
         results
     }
 
-    fn get_entries_by_index(&self, idx: u32, count: u32, s: &str) -> Vec<DicEntry> {
+    fn get_entries_by_index(&self, idx: u32, count: u32, s: &str, skip: bool) -> Vec<DicEntry> {
         let mut results: Vec<DicEntry> = Vec::new();
         for i in 0..count {
             let offset: usize = (self.token_offset + (idx + i) * 16) as usize;
@@ -339,16 +340,17 @@ impl MeCabDic {
                 posid: posid,
                 wcost: wcost,
                 feature: feature,
+                skip: skip,
             });
         }
 
         results
     }
 
-    fn get_entries(&self, result: u32, s: &str) -> Vec<DicEntry> {
+    fn get_entries(&self, result: u32, s: &str, skip: bool) -> Vec<DicEntry> {
         let index = result >> 8;
         let count = result & 0xFF;
-        self.get_entries_by_index(index, count, s)
+        self.get_entries_by_index(index, count, s, skip)
     }
 
     pub fn lookup(&self, s: &[u8]) -> Vec<DicEntry> {
@@ -357,7 +359,7 @@ impl MeCabDic {
             let index = (*result >> 8) as u32;
             let count = (result & 0xFF) as u32;
             let mut new_results =
-                self.get_entries_by_index(index, count, str::from_utf8(&s[..*len]).unwrap());
+                self.get_entries_by_index(index, count, str::from_utf8(&s[..*len]).unwrap(), false);
             results.append(&mut new_results);
         }
         results
@@ -365,10 +367,15 @@ impl MeCabDic {
 
     pub fn lookup_unknowns(&self, s: &[u8], cp: &CharProperty) -> (Vec<DicEntry>, bool) {
         let (default_type, ln_vec, invoke) = cp.get_unknown_lengths(s);
-        let result = self.exact_match_search(cp.category_names[default_type as usize].as_bytes());
+        let category_name = cp.category_names[default_type as usize].as_bytes();
+        let result = self.exact_match_search(category_name);
         let mut results: Vec<DicEntry> = Vec::new();
         for i in ln_vec {
-            let mut new_results = self.get_entries(result as u32, str::from_utf8(&s[..i]).unwrap());
+            let mut new_results = self.get_entries(
+                result as u32,
+                str::from_utf8(&s[..i]).unwrap(),
+                category_name == b"SPACE",
+            );
             results.append(&mut new_results);
         }
         (results, invoke)
