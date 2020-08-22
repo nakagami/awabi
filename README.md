@@ -23,6 +23,8 @@ $ cargo install awabi
 
 ## How to use
 
+### awabi command
+
 ```
 $ echo 'すもももももももものうち'  | awabi
 すもも  名詞,一般,*,*,*,*,すもも,スモモ,スモモ
@@ -53,6 +55,13 @@ EOS
 うち    名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
 EOS
 ```
+
+### use as library
+
+See main as sample code.
+
+- tokensize https://github.com/nakagami/awabi/blob/master/src/main.rs#L58
+- N best match https://github.com/nakagami/awabi/blob/master/src/main.rs#L60
 
 ## See also
 
