@@ -92,6 +92,12 @@ fn test_tokenizer() {
             ("。".to_string(), "記号,句点,*,*,*,*,。,。,。".to_string()),
         ]
     );
+    assert_eq!(
+        tokenizer
+            .tokenize("山嵐は might is right という英語を引いて説諭を加えた")
+            .len(),
+        14
+    );
 }
 
 #[test]
