@@ -10,7 +10,7 @@ MeCab https://taku910.github.io/mecab/ and related dictionary is required.
 
 ### Debian/Ubuntu
 ```
-$ sudo apt install mecab
+$ sudo apt install mecab mecab-ipadic-utf8
 $ cargo install awabi
 ```
 
