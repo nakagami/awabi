@@ -2,8 +2,6 @@
 
 `awabi` is a morphological analyzer using mecab dictionary, written in Rust.
 
-See also python wrapper `pyawabi` https://github.com/nakagami/pyawabi .
-
 ## Requirements and how to install
 
 MeCab https://taku910.github.io/mecab/ and related dictionary is required.
