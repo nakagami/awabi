@@ -65,7 +65,7 @@ See main as sample code.
 
 ## See also
 
-- goawabi https://github.com/nakagami/goawabi Go implementation
 - pyawabi https://github.com/nakagami/pyawabi Python wrapper
-- pure-pyawabi https://github.com/nakagami/pure-pyawabi
-- exawabi https://github.com/nakagami/exawabi
+- exawabi https://github.com/nakagami/exawabi Elixir wrapper
+- goawabi https://github.com/nakagami/goawabi Go implementation
+- pure-pyawabi https://github.com/nakagami/pure-pyawabi Python implementation
