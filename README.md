@@ -67,3 +67,4 @@ See main as sample code.
 - exawabi https://github.com/nakagami/exawabi Elixir wrapper
 - goawabi https://github.com/nakagami/goawabi Go implementation
 - pure-pyawabi https://github.com/nakagami/pure-pyawabi Python implementation
+- Awabi.jl https://github.com/nakagami/Awabi.jl Julia implementation
