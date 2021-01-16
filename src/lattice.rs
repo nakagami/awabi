@@ -28,7 +28,8 @@ use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct Node {
-    entry: Option<DicEntry>,
+    pub original: Option<String>,
+    pub feature: Option<String>,
     pos: i32,
     epos: i32,
     index: i32,
@@ -44,7 +45,8 @@ pub struct Node {
 impl Node {
     fn bos() -> Node {
         Node {
-            entry: None,
+            original: None,
+            feature: None,
             pos: 0,
             epos: 1,
             index: 0,
@@ -60,7 +62,8 @@ impl Node {
 
     fn eos(pos: i32) -> Node {
         Node {
-            entry: None,
+            original: None,
+            feature: None,
             pos: pos,
             epos: pos + 1,
             index: 0,
@@ -82,7 +85,8 @@ impl Node {
         let skip: bool = e.skip;
 
         Node {
-            entry: Some(e),
+            original: Some(e.original),
+            feature: Some(e.feature),
             pos: 0,
             epos: 0,
             index,
@@ -97,34 +101,21 @@ impl Node {
     }
 
     pub fn is_bos(&self) -> bool {
-        match self.entry {
+        match self.original {
             Some(_) => false,
             None => self.pos == 0,
         }
     }
     pub fn is_eos(&self) -> bool {
-        match self.entry {
+        match self.original {
             Some(_) => false,
             None => self.pos != 0,
         }
     }
     fn node_len(&self) -> i32 {
-        match &self.entry {
-            Some(e) => e.original.as_bytes().len() as i32,
+        match &self.original {
+            Some(o) => o.as_bytes().len() as i32,
             None => 1,
-        }
-    }
-
-    pub fn get_dic_entry(&self) -> DicEntry {
-        let d = &self.entry.as_ref().unwrap();
-        DicEntry {
-            original: String::from(&d.original),
-            lc_attr: d.lc_attr,
-            rc_attr: d.rc_attr,
-            posid: d.posid,
-            wcost: d.wcost,
-            feature: String::from(&d.feature),
-            skip: d.skip,
         }
     }
 }
@@ -314,8 +305,8 @@ impl BackwardPath {
             } else {
                 println!(
                     "\t{}\t{}",
-                    node.entry.as_ref().unwrap().original,
-                    node.entry.as_ref().unwrap().feature
+                    node.original.as_ref().unwrap(),
+                    node.feature.as_ref().unwrap()
                 );
             }
         }
