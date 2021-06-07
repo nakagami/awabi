@@ -27,6 +27,7 @@ use memmap::{Mmap, MmapOptions};
 use std::fs::File;
 use std::i16;
 use std::i32;
+use std::slice;
 use std::str;
 use std::u16;
 use std::u32;
@@ -112,13 +113,26 @@ fn utf8_to_ucs2(s: &[u8], index: usize) -> (u16, usize) {
 
 #[derive(Debug, Clone)]
 pub struct DicEntry {
-    pub original: String,
+    pub original_ptr: *const u8,
+    pub original_len: usize,
     pub lc_attr: u16,
     pub rc_attr: u16,
     pub posid: u16,
     pub wcost: i16,
-    pub feature: String,
+    pub feature_ptr: *const u8,
+    pub feature_len: usize,
     pub skip: bool,
+}
+
+impl DicEntry {
+    #[allow(dead_code)]
+    fn original_string(&self) -> String {
+        unsafe {
+            str::from_utf8(slice::from_raw_parts(self.original_ptr, self.original_len))
+                .unwrap()
+                .to_string()
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -331,15 +345,23 @@ impl MeCabDic {
             let rc_attr = unpack_u16(&self.mmap, offset + 2);
             let posid = unpack_u16(&self.mmap, offset + 4);
             let wcost = unpack_i16(&self.mmap, offset + 6);
+
             let feature = unpack_u32(&self.mmap, offset + 8);
-            let feature = unpack_string(&self.mmap, (self.feature_offset + feature) as usize);
+            let start = (self.feature_offset + feature) as usize;
+            let mut end = start;
+            while self.mmap[end] != 0 {
+                end += 1;
+            }
+
             results.push(DicEntry {
-                original: s.to_string(),
+                original_ptr: s.as_ptr(),
+                original_len: s.len(),
                 lc_attr: lc_attr,
                 rc_attr: rc_attr,
                 posid: posid,
                 wcost: wcost,
-                feature: feature,
+                feature_ptr: (&self.mmap[start..]).as_ptr(),
+                feature_len: end - start,
                 skip: skip,
             });
         }
@@ -513,5 +535,5 @@ fn test_lookup_unknowns() {
     let (entries, invoke) = unk_dic.lookup_unknowns("１９６７年".as_bytes(), &cp);
     assert_eq!(entries.len(), 1);
     assert_eq!(invoke, true);
-    assert_eq!(entries[0].original, "１９６７");
+    assert_eq!(entries[0].original_string(), "１９６７".to_string())
 }

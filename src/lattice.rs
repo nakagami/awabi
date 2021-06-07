@@ -24,12 +24,17 @@
 use super::dic::{DicEntry, Matrix};
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
+use std::ptr;
 use std::rc::Rc;
+use std::slice;
+use std::str;
 
 #[derive(Debug)]
 pub struct Node {
-    pub original: Option<String>,
-    pub feature: Option<String>,
+    pub original_ptr: *const u8,
+    pub original_len: usize,
+    pub feature_ptr: *const u8,
+    pub feature_len: usize,
     pos: i32,
     epos: i32,
     index: i32,
@@ -45,8 +50,10 @@ pub struct Node {
 impl Node {
     fn bos() -> Node {
         Node {
-            original: None,
-            feature: None,
+            original_ptr: ptr::null(),
+            original_len: 0,
+            feature_ptr: ptr::null(),
+            feature_len: 0,
             pos: 0,
             epos: 1,
             index: 0,
@@ -62,8 +69,10 @@ impl Node {
 
     fn eos(pos: i32) -> Node {
         Node {
-            original: None,
-            feature: None,
+            original_ptr: ptr::null(),
+            original_len: 0,
+            feature_ptr: ptr::null(),
+            feature_len: 0,
             pos: pos,
             epos: pos + 1,
             index: 0,
@@ -85,8 +94,10 @@ impl Node {
         let skip: bool = e.skip;
 
         Node {
-            original: Some(e.original),
-            feature: Some(e.feature),
+            original_ptr: e.original_ptr,
+            original_len: e.original_len,
+            feature_ptr: e.feature_ptr,
+            feature_len: e.feature_len,
             pos: 0,
             epos: 0,
             index,
@@ -101,22 +112,34 @@ impl Node {
     }
 
     pub fn is_bos(&self) -> bool {
-        match self.original {
-            Some(_) => false,
-            None => self.pos == 0,
-        }
+        self.original_ptr.is_null() && self.pos == 0
     }
+
     pub fn is_eos(&self) -> bool {
-        match self.original {
-            Some(_) => false,
-            None => self.pos != 0,
+        self.original_ptr.is_null() && self.pos != 0
+    }
+
+    pub fn original_to_string(&self) -> String {
+        unsafe {
+            str::from_utf8(slice::from_raw_parts(self.original_ptr, self.original_len))
+                .unwrap()
+                .to_string()
         }
     }
-    fn node_len(&self) -> i32 {
-        match &self.original {
-            Some(o) => o.as_bytes().len() as i32,
-            None => 1,
+
+    pub fn feature_to_string(&self) -> String {
+        unsafe {
+            str::from_utf8(slice::from_raw_parts(self.feature_ptr, self.feature_len))
+                .unwrap()
+                .to_string()
         }
+    }
+
+    fn node_len(&self) -> i32 {
+        if !self.original_ptr.is_null() {
+            return self.original_len as i32;
+        }
+        1
     }
 }
 
@@ -305,8 +328,14 @@ impl BackwardPath {
             } else {
                 println!(
                     "\t{}\t{}",
-                    node.original.as_ref().unwrap(),
-                    node.feature.as_ref().unwrap()
+                    unsafe {
+                        str::from_utf8(slice::from_raw_parts(node.original_ptr, node.original_len))
+                            .unwrap()
+                    },
+                    unsafe {
+                        str::from_utf8(slice::from_raw_parts(node.feature_ptr, node.feature_len))
+                            .unwrap()
+                    }
                 );
             }
         }
