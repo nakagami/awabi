@@ -24,10 +24,10 @@
 use super::dic::{DicEntry, Matrix};
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
-use std::str;
+use std::ptr;
 use std::rc::Rc;
 use std::slice;
-use std::ptr;
+use std::str;
 
 #[derive(Debug)]
 pub struct Node {
@@ -116,7 +116,11 @@ impl Node {
     }
 
     pub fn original_to_string(&self) -> String {
-        unsafe { str::from_utf8(slice::from_raw_parts(self.original_ptr, self.original_len)).unwrap().to_string() }
+        unsafe {
+            str::from_utf8(slice::from_raw_parts(self.original_ptr, self.original_len))
+                .unwrap()
+                .to_string()
+        }
     }
 
     fn node_len(&self) -> i32 {
