@@ -119,7 +119,7 @@ impl Tokenizer {
         assert!(nodes[nodes.len() - 1].is_eos());
         for i in 1..nodes.len() - 1 {
             entries.push((
-                nodes[i].original.as_ref().unwrap().to_string(),
+                nodes[i].original_to_string(),
                 nodes[i].feature.as_ref().unwrap().to_string(),
             ));
         }
@@ -135,7 +135,7 @@ impl Tokenizer {
             let mut entries: Vec<(String, String)> = Vec::new();
             for i in 1..nodes.len() - 1 {
                 entries.push((
-                    nodes[i].original.as_ref().unwrap().to_string(),
+                    nodes[i].original_to_string(),
                     nodes[i].feature.as_ref().unwrap().to_string(),
                 ));
             }

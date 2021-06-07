@@ -24,11 +24,15 @@
 use super::dic::{DicEntry, Matrix};
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
+use std::str;
 use std::rc::Rc;
+use std::slice;
+use std::ptr;
 
 #[derive(Debug)]
 pub struct Node {
-    pub original: Option<String>,
+    pub original_ptr: *const u8,
+    pub original_len: usize,
     pub feature: Option<String>,
     pos: i32,
     epos: i32,
@@ -45,7 +49,8 @@ pub struct Node {
 impl Node {
     fn bos() -> Node {
         Node {
-            original: None,
+            original_ptr: ptr::null(),
+            original_len: 0,
             feature: None,
             pos: 0,
             epos: 1,
@@ -62,7 +67,8 @@ impl Node {
 
     fn eos(pos: i32) -> Node {
         Node {
-            original: None,
+            original_ptr: ptr::null(),
+            original_len: 0,
             feature: None,
             pos: pos,
             epos: pos + 1,
@@ -85,7 +91,8 @@ impl Node {
         let skip: bool = e.skip;
 
         Node {
-            original: Some(e.original),
+            original_ptr: e.original_ptr,
+            original_len: e.original_len,
             feature: Some(e.feature),
             pos: 0,
             epos: 0,
@@ -101,22 +108,22 @@ impl Node {
     }
 
     pub fn is_bos(&self) -> bool {
-        match self.original {
-            Some(_) => false,
-            None => self.pos == 0,
-        }
+        self.original_ptr.is_null() && self.pos == 0
     }
+
     pub fn is_eos(&self) -> bool {
-        match self.original {
-            Some(_) => false,
-            None => self.pos != 0,
-        }
+        self.original_ptr.is_null() && self.pos != 0
     }
+
+    pub fn original_to_string(&self) -> String {
+        unsafe { str::from_utf8(slice::from_raw_parts(self.original_ptr, self.original_len)).unwrap().to_string() }
+    }
+
     fn node_len(&self) -> i32 {
-        match &self.original {
-            Some(o) => o.as_bytes().len() as i32,
-            None => 1,
+        if !self.original_ptr.is_null() {
+            return self.original_len as i32;
         }
+        1
     }
 }
 
@@ -305,7 +312,10 @@ impl BackwardPath {
             } else {
                 println!(
                     "\t{}\t{}",
-                    node.original.as_ref().unwrap(),
+                    unsafe {
+                        str::from_utf8(slice::from_raw_parts(node.original_ptr, node.original_len))
+                            .unwrap()
+                    },
                     node.feature.as_ref().unwrap()
                 );
             }

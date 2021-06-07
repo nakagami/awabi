@@ -112,7 +112,8 @@ fn utf8_to_ucs2(s: &[u8], index: usize) -> (u16, usize) {
 
 #[derive(Debug, Clone)]
 pub struct DicEntry {
-    pub original: String,
+    pub original_ptr: *const u8,
+    pub original_len: usize,
     pub lc_attr: u16,
     pub rc_attr: u16,
     pub posid: u16,
@@ -334,7 +335,8 @@ impl MeCabDic {
             let feature = unpack_u32(&self.mmap, offset + 8);
             let feature = unpack_string(&self.mmap, (self.feature_offset + feature) as usize);
             results.push(DicEntry {
-                original: s.to_string(),
+                original_ptr: s.as_ptr(),
+                original_len: s.len(),
                 lc_attr: lc_attr,
                 rc_attr: rc_attr,
                 posid: posid,
@@ -513,5 +515,9 @@ fn test_lookup_unknowns() {
     let (entries, invoke) = unk_dic.lookup_unknowns("１９６７年".as_bytes(), &cp);
     assert_eq!(entries.len(), 1);
     assert_eq!(invoke, true);
-    assert_eq!(entries[0].original, "１９６７");
+    unsafe {
+        let original =
+            unsafe { slice::from_raw_parts(entries[0].original_ptr, entries[0].original_len) };
+        assert_eq!(str::from_utf8(original).unwrap(), "１９６７");
+    }
 }
