@@ -1,6 +1,6 @@
 [package]
 name = "awabi"
-version = "0.2.8"
+version = "0.2.9"
 authors = ["Hajime Nakagami <nakagami@gmail.com>"]
 edition = "2018"
 
