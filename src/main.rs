@@ -51,9 +51,8 @@ fn main() {
     io::stdin().read_to_string(&mut lines).unwrap();
     lines = lines.trim_end().to_string();
 
+    let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
     for s in lines.split("\n") {
-        let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
-
         if nbest == 1 {
             print_tokens(&tokenizer.tokenize(s));
         } else {

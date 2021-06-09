@@ -152,8 +152,8 @@ pub struct Lattice {
 
 impl Lattice {
     pub fn new(size: usize) -> Lattice {
-        let mut snodes: Vec<Vec<Rc<Node>>> = Vec::new();
-        let mut enodes: Vec<Vec<Rc<Node>>> = Vec::new();
+        let mut snodes: Vec<Vec<Rc<Node>>> = Vec::with_capacity(size + 2);
+        let mut enodes: Vec<Vec<Rc<Node>>> = Vec::with_capacity(size + 3);
 
         enodes.push(Vec::new());
 
@@ -222,8 +222,8 @@ impl Lattice {
 
     pub fn end(&mut self, matrix: &Matrix) {
         self.add(Node::eos(self.p), matrix);
-        self.snodes.truncate((self.p + 1) as usize);
-        self.enodes.truncate((self.p + 2) as usize);
+        // self.snodes.truncate((self.p + 1) as usize);
+        // self.enodes.truncate((self.p + 2) as usize);
     }
 
     pub fn backward(&self) -> Vec<Rc<Node>> {

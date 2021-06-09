@@ -337,7 +337,14 @@ impl MeCabDic {
         results
     }
 
-    fn get_entries_by_index(&self, idx: u32, count: u32, s: &str, skip: bool) -> Vec<DicEntry> {
+    fn get_entries_by_index(
+        &self,
+        idx: u32,
+        count: u32,
+        s: &[u8],
+        s_len: usize,
+        skip: bool,
+    ) -> Vec<DicEntry> {
         let mut results: Vec<DicEntry> = Vec::new();
         for i in 0..count {
             let offset: usize = (self.token_offset + (idx + i) * 16) as usize;
@@ -355,7 +362,7 @@ impl MeCabDic {
 
             results.push(DicEntry {
                 original_ptr: s.as_ptr(),
-                original_len: s.len(),
+                original_len: s_len,
                 lc_attr: lc_attr,
                 rc_attr: rc_attr,
                 posid: posid,
@@ -369,10 +376,10 @@ impl MeCabDic {
         results
     }
 
-    fn get_entries(&self, result: u32, s: &str, skip: bool) -> Vec<DicEntry> {
+    fn get_entries(&self, result: u32, s: &[u8], s_len: usize, skip: bool) -> Vec<DicEntry> {
         let index = result >> 8;
         let count = result & 0xFF;
-        self.get_entries_by_index(index, count, s, skip)
+        self.get_entries_by_index(index, count, s, s_len, skip)
     }
 
     pub fn lookup(&self, s: &[u8]) -> Vec<DicEntry> {
@@ -380,8 +387,7 @@ impl MeCabDic {
         for (result, len) in self.common_prefix_search(s).iter() {
             let index = (*result >> 8) as u32;
             let count = (result & 0xFF) as u32;
-            let mut new_results =
-                self.get_entries_by_index(index, count, str::from_utf8(&s[..*len]).unwrap(), false);
+            let mut new_results = self.get_entries_by_index(index, count, s, *len, false);
             results.append(&mut new_results);
         }
         results
@@ -393,11 +399,7 @@ impl MeCabDic {
         let result = self.exact_match_search(category_name);
         let mut results: Vec<DicEntry> = Vec::new();
         for i in ln_vec {
-            let mut new_results = self.get_entries(
-                result as u32,
-                str::from_utf8(&s[..i]).unwrap(),
-                category_name == b"SPACE",
-            );
+            let mut new_results = self.get_entries(result as u32, s, i, category_name == b"SPACE");
             results.append(&mut new_results);
         }
         (results, invoke)
