@@ -2,7 +2,7 @@
 name = "awabi"
 version = "0.2.10"
 authors = ["Hajime Nakagami <nakagami@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 license = "MIT"
 description = "A morphological analyzer using mecab dictionary"
