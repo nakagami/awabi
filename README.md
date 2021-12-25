@@ -21,6 +21,78 @@ $ cargo install awabi
 
 ## How to use
 
+### use as library
+
+#### Best tokens
+
+example
+```
+use awabi::tokenizer;
+fn main() {
+    let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
+    let tokens = tokenizer.tokenize("すもももももももものうち");
+    for token in tokens.iter() {
+        println!("{}\t{}", token.0, token.1);
+    }
+}
+```
+
+result
+```
+すもも	名詞,一般,*,*,*,*,すもも,スモモ,スモモ
+も	助詞,係助詞,*,*,*,*,も,モ,モ
+もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+も	助詞,係助詞,*,*,*,*,も,モ,モ
+もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+の	助詞,連体化,*,*,*,*,の,ノ,ノ
+うち	名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
+```
+
+#### N-best tokens
+
+example
+```
+use awabi::tokenizer;
+fn main() {
+    let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
+    let tokens_list = tokenizer.tokenize_n_best("すもももももももものうち", 3);
+    for tokens in tokens_list.iter() {
+        println!("------------------------------------------------------");
+        for token in tokens.iter() {
+            println!("{}\token{}", token.0, token.1);
+        }
+    }
+}
+```
+
+result
+```
+------------------------------------------------------
+すもも	oken名詞,一般,*,*,*,*,すもも,スモモ,スモモ
+も	oken助詞,係助詞,*,*,*,*,も,モ,モ
+もも	oken名詞,一般,*,*,*,*,もも,モモ,モモ
+も	oken助詞,係助詞,*,*,*,*,も,モ,モ
+もも	oken名詞,一般,*,*,*,*,もも,モモ,モモ
+の	oken助詞,連体化,*,*,*,*,の,ノ,ノ
+うち	oken名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
+------------------------------------------------------
+すもも	oken名詞,一般,*,*,*,*,すもも,スモモ,スモモ
+も	oken助詞,係助詞,*,*,*,*,も,モ,モ
+もも	oken名詞,一般,*,*,*,*,もも,モモ,モモ
+もも	oken名詞,一般,*,*,*,*,もも,モモ,モモ
+も	oken助詞,係助詞,*,*,*,*,も,モ,モ
+の	oken助詞,連体化,*,*,*,*,の,ノ,ノ
+うち	oken名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
+------------------------------------------------------
+すもも	oken名詞,一般,*,*,*,*,すもも,スモモ,スモモ
+もも	oken名詞,一般,*,*,*,*,もも,モモ,モモ
+も	oken助詞,係助詞,*,*,*,*,も,モ,モ
+もも	oken名詞,一般,*,*,*,*,もも,モモ,モモ
+も	oken助詞,係助詞,*,*,*,*,も,モ,モ
+の	oken助詞,連体化,*,*,*,*,の,ノ,ノ
+うち	oken名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
+```
+
 ### awabi command
 
 ```
@@ -53,13 +125,6 @@ EOS
 うち    名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
 EOS
 ```
-
-### use as library
-
-See main as sample code.
-
-- tokensize https://github.com/nakagami/awabi/blob/master/src/main.rs#L58
-- N best match https://github.com/nakagami/awabi/blob/master/src/main.rs#L60
 
 ## See also
 
