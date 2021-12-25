@@ -93,6 +93,19 @@ result
 うち	oken名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
 ```
 
+#### Use the specified mecabrc
+
+```
+use awabi::tokenizer;
+fn main() {
+    let tokenizer = tokenizer::Tokenizer::new(Some("/some/where/mecabrc".to_string())).unwrap();
+    let tokens = tokenizer.tokenize("すもももももももものうち");
+    for token in tokens.iter() {
+        println!("{}\t{}", token.0, token.1);
+    }
+}
+```
+
 ### awabi command
 
 ```
