@@ -38,9 +38,9 @@ pub struct Tokenizer {
 }
 
 impl Tokenizer {
-    pub fn new(mecabrc_path: Option<String>) -> Result<Tokenizer, std::io::Error> {
+    pub fn new(mecabrc_path: Option<&str>) -> Result<Tokenizer, std::io::Error> {
         let path = if let Some(s) = mecabrc_path {
-            s
+            s.to_string()
         } else {
             mecabrc::find_mecabrc().expect("Can't find mecabrc")
         };

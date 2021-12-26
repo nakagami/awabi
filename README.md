@@ -98,7 +98,7 @@ result
 ```
 use awabi::tokenizer;
 fn main() {
-    let tokenizer = tokenizer::Tokenizer::new(Some("/some/where/mecabrc".to_string())).unwrap();
+    let tokenizer = tokenizer::Tokenizer::new(Some("/some/where/mecabrc")).unwrap();
     let tokens = tokenizer.tokenize("すもももももももものうち");
     for token in tokens.iter() {
         println!("{}\t{}", token.0, token.1);
