@@ -246,8 +246,6 @@ impl CharProperty {
 pub struct MeCabDic {
     pub mmap: Mmap,
     pub dic_size: u32,
-    lsize: u32,
-    rsize: u32,
     da_offset: u32,
     token_offset: u32,
     feature_offset: u32,
@@ -261,8 +259,8 @@ impl MeCabDic {
         let _version = unpack_u32(&mmap, 4);
         let _dictype = unpack_u32(&mmap, 8);
         let _lexsize = unpack_u32(&mmap, 12);
-        let lsize = unpack_u32(&mmap, 16);
-        let rsize = unpack_u32(&mmap, 20);
+        let _lsize = unpack_u32(&mmap, 16);
+        let _rsize = unpack_u32(&mmap, 20);
         let dsize = unpack_u32(&mmap, 24);
         let tsize = unpack_u32(&mmap, 28);
         let _fsize = unpack_u32(&mmap, 32);
@@ -271,8 +269,6 @@ impl MeCabDic {
         let dic = MeCabDic {
             mmap: mmap,
             dic_size: dic_size,
-            lsize: lsize,
-            rsize: rsize,
             da_offset: 72,
             token_offset: 72 + dsize,
             feature_offset: 72 + dsize + tsize,
