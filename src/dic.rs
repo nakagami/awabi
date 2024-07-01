@@ -242,10 +242,8 @@ impl CharProperty {
     }
 }
 
-#[derive(Debug)]
 pub struct MeCabDic {
     pub mmap: Mmap,
-    pub dic_size: u32,
     da_offset: u32,
     token_offset: u32,
     feature_offset: u32,
@@ -255,7 +253,7 @@ impl MeCabDic {
     pub fn open(dic_path: &str) -> Result<MeCabDic, std::io::Error> {
         let file = File::open(dic_path)?;
         let mmap = unsafe { MmapOptions::new().map(&file)? };
-        let dic_size = unpack_u32(&mmap, 0) ^ 0xef718f77;
+        // dic size unpack_u32(&mmap, 0) ^ 0xef718f77;
         let _version = unpack_u32(&mmap, 4);
         let _dictype = unpack_u32(&mmap, 8);
         let _lexsize = unpack_u32(&mmap, 12);
@@ -268,7 +266,6 @@ impl MeCabDic {
 
         let dic = MeCabDic {
             mmap: mmap,
-            dic_size: dic_size,
             da_offset: 72,
             token_offset: 72 + dsize,
             feature_offset: 72 + dsize + tsize,
@@ -402,11 +399,10 @@ impl MeCabDic {
     }
 }
 
-#[derive(Debug)]
 pub struct Matrix {
     pub mmap: Mmap,
     pub lsize: usize,
-    pub rsize: usize,
+    //    pub rsize: usize,
 }
 
 impl Matrix {
@@ -414,12 +410,12 @@ impl Matrix {
         let file = File::open(dic_path)?;
         let mmap = unsafe { MmapOptions::new().map(&file)? };
         let lsize = unpack_u16(&mmap, 0) as usize;
-        let rsize = unpack_u16(&mmap, 2) as usize;
+        let _rsize = unpack_u16(&mmap, 2) as usize;
 
         let matrix = Matrix {
             mmap: mmap,
             lsize: lsize,
-            rsize: rsize,
+            //            rsize: rsize,
         };
         Ok(matrix)
     }
@@ -442,8 +438,7 @@ fn test_dic_open() {
     let rc_map = mecabrc::rc_map(&mecabrc::find_mecabrc().unwrap()).unwrap();
     let result = MeCabDic::open(&mecabrc::get_dic_path(&rc_map, "sys.dic"));
     assert!(!result.is_err(), "Can't open dict file.");
-    let sys_dic = result.unwrap();
-    assert!(sys_dic.dic_size >= 49199027);
+    let _sys_dic = result.unwrap();
 }
 
 #[test]
