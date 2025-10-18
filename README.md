@@ -12,7 +12,7 @@ $ sudo apt install mecab mecab-ipadic-utf8
 $ cargo install awabi
 ```
 
-### Mac OS X (homebrew)
+### macOS (homebrew)
 ```
 $ brew install mecab
 $ brew install mecab-ipadic
