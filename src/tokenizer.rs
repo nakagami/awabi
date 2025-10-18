@@ -23,6 +23,7 @@
 */
 use super::*;
 
+#[derive(Clone)]
 pub struct Tokenizer {
     // system dictionary
     sys_dic: dic::MeCabDic,
