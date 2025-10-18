@@ -95,10 +95,14 @@ result
 
 #### Use the specified mecabrc
 
+If the Mecab dictionary is not in the usual location,
+pass the Mecab dictionary path to tokenizer::Tokenizer::new().
+
+For example, if you installed it using brew on macOS, you would specify it as follows:
 ```
 use awabi::tokenizer;
 fn main() {
-    let tokenizer = tokenizer::Tokenizer::new(Some("/some/where/mecabrc")).unwrap();
+    let tokenizer = tokenizer::Tokenizer::new(Some("/opt/homebrew/etc/mecabrc")).unwrap();
     let tokens = tokenizer.tokenize("すもももももももものうち");
     for token in tokens.iter() {
         println!("{}\t{}", token.0, token.1);
