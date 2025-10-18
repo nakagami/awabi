@@ -25,7 +25,7 @@ extern crate memmap;
 
 use memmap::{Mmap, MmapOptions};
 use std::fs::File;
-use std::rc::Rc;
+use std::sync::Arc;
 use std::i16;
 use std::i32;
 use std::slice;
@@ -138,7 +138,7 @@ impl DicEntry {
 
 #[derive(Clone)]
 pub struct CharProperty {
-    pub mmap: Rc<Mmap>,
+    pub mmap: Arc<Mmap>,
     pub category_names: Vec<String>,
     pub offset: usize,
 }
@@ -146,7 +146,7 @@ pub struct CharProperty {
 impl CharProperty {
     pub fn open(dic_path: &str) -> Result<CharProperty, std::io::Error> {
         let file = File::open(dic_path)?;
-        let mmap = unsafe { Rc::new(MmapOptions::new().map(&file)?) };
+        let mmap = unsafe { Arc::new(MmapOptions::new().map(&file)?) };
         let mut category_names: Vec<String> = Vec::new();
         let num_categories = unpack_u32(&mmap, 0);
         for i in 0..num_categories {
@@ -245,7 +245,7 @@ impl CharProperty {
 
 #[derive(Clone)]
 pub struct MeCabDic {
-    mmap: Rc<Mmap>,
+    mmap: Arc<Mmap>,
     da_offset: u32,
     token_offset: u32,
     feature_offset: u32,
@@ -254,7 +254,7 @@ pub struct MeCabDic {
 impl MeCabDic {
     pub fn open(dic_path: &str) -> Result<MeCabDic, std::io::Error> {
         let file = File::open(dic_path)?;
-        let mmap = unsafe { Rc::new(MmapOptions::new().map(&file)?) };
+        let mmap = unsafe { Arc::new(MmapOptions::new().map(&file)?) };
         // dic size unpack_u32(&mmap, 0) ^ 0xef718f77;
         let _version = unpack_u32(&mmap, 4);
         let _dictype = unpack_u32(&mmap, 8);
@@ -403,7 +403,7 @@ impl MeCabDic {
 
 #[derive(Clone)]
 pub struct Matrix {
-    mmap: Rc<Mmap>,
+    mmap: Arc<Mmap>,
     lsize: usize,
     //    pub rsize: usize,
 }
@@ -411,7 +411,7 @@ pub struct Matrix {
 impl Matrix {
     pub fn open(dic_path: &str) -> Result<Matrix, std::io::Error> {
         let file = File::open(dic_path)?;
-        let mmap = unsafe { Rc::new(MmapOptions::new().map(&file)?) };
+        let mmap = unsafe { Arc::new(MmapOptions::new().map(&file)?) };
         let lsize = unpack_u16(&mmap, 0) as usize;
         let _rsize = unpack_u16(&mmap, 2) as usize;
 
