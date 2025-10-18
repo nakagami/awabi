@@ -98,6 +98,32 @@ fn test_tokenizer() {
             .len(),
         14
     );
+
+    let tokenizer2 = tokenizer;
+    assert_eq!(
+        tokenizer2.tokenize("すもももももももものうち"),
+        vec![
+            (
+                "すもも".to_string(),
+                "名詞,一般,*,*,*,*,すもも,スモモ,スモモ".to_string()
+            ),
+            ("も".to_string(), "助詞,係助詞,*,*,*,*,も,モ,モ".to_string()),
+            (
+                "もも".to_string(),
+                "名詞,一般,*,*,*,*,もも,モモ,モモ".to_string()
+            ),
+            ("も".to_string(), "助詞,係助詞,*,*,*,*,も,モ,モ".to_string()),
+            (
+                "もも".to_string(),
+                "名詞,一般,*,*,*,*,もも,モモ,モモ".to_string()
+            ),
+            ("の".to_string(), "助詞,連体化,*,*,*,*,の,ノ,ノ".to_string()),
+            (
+                "うち".to_string(),
+                "名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ".to_string()
+            ),
+        ]
+    );
 }
 
 #[test]
