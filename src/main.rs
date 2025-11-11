@@ -22,7 +22,7 @@
 *SOFTWARE.
 */
 use awabi::tokenizer;
-use clap::{App, Arg};
+use clap::{Command, Arg};
 use std::io::{self, Read};
 
 fn print_tokens(tokens: &Vec<(String, String)>) {
@@ -33,17 +33,17 @@ fn print_tokens(tokens: &Vec<(String, String)>) {
 }
 
 fn main() {
-    let app = App::new("awabi").arg(
-        Arg::with_name("nbest")
+    let app = Command::new("awabi").arg(
+        Arg::new("nbest")
             .help("output N best results")
-            .short("N")
+            .short('N')
             .long("nbest")
-            .takes_value(true),
+            .value_name("COUNT"),
     );
 
     let matches = app.get_matches();
     let mut nbest = 1;
-    if let Some(n_best) = matches.value_of("nbest") {
+    if let Some(n_best) = matches.get_one::<String>("nbest") {
         nbest = n_best.parse().unwrap();
     }
 
