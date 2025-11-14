@@ -22,7 +22,7 @@
 *SOFTWARE.
 */
 use awabi::tokenizer;
-use clap::{Command, Arg};
+use clap::{Arg, Command};
 use std::io::{self, Read};
 
 fn print_tokens(tokens: &Vec<(String, String)>) {
@@ -33,13 +33,21 @@ fn print_tokens(tokens: &Vec<(String, String)>) {
 }
 
 fn main() {
-    let app = Command::new("awabi").arg(
-        Arg::new("nbest")
-            .help("output N best results")
-            .short('N')
-            .long("nbest")
-            .value_name("COUNT"),
-    );
+    let app = Command::new("awabi")
+        .arg(
+            Arg::new("nbest")
+                .help("output N best results")
+                .short('N')
+                .long("nbest")
+                .value_name("COUNT"),
+        )
+        .arg(
+            Arg::new("rcfile")
+                .help("use FILE as resource file")
+                .short('r')
+                .long("rcfile")
+                .value_name("FILE"),
+        );
 
     let matches = app.get_matches();
     let mut nbest = 1;
@@ -51,7 +59,12 @@ fn main() {
     io::stdin().read_to_string(&mut lines).unwrap();
     lines = lines.trim_end().to_string();
 
-    let tokenizer = tokenizer::Tokenizer::new(None).unwrap();
+    let rcfile = if let Some(rcfile_option) = matches.get_one::<String>("rcfile") {
+        Some(rcfile_option.as_str())
+    } else {
+        None
+    };
+    let tokenizer = tokenizer::Tokenizer::new(rcfile).unwrap();
     for s in lines.split("\n") {
         if nbest == 1 {
             print_tokens(&tokenizer.tokenize(s));

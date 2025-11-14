@@ -24,8 +24,8 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::io;
-use std::io::prelude::*;
 use std::io::BufReader;
+use std::io::prelude::*;
 use std::path::Path;
 
 use regex::Regex;

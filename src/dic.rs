@@ -25,11 +25,11 @@ extern crate memmap;
 
 use memmap::{Mmap, MmapOptions};
 use std::fs::File;
-use std::sync::Arc;
 use std::i16;
 use std::i32;
 use std::slice;
 use std::str;
+use std::sync::Arc;
 use std::u16;
 use std::u32;
 
