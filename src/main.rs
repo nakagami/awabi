@@ -50,20 +50,21 @@ fn main() {
         );
 
     let matches = app.get_matches();
-    let mut nbest = 1;
-    if let Some(n_best) = matches.get_one::<String>("nbest") {
-        nbest = n_best.parse().unwrap();
-    }
-
-    let mut lines = String::new();
-    io::stdin().read_to_string(&mut lines).unwrap();
-    lines = lines.trim_end().to_string();
-
+    let nbest = if let Some(n_best) = matches.get_one::<String>("nbest") {
+        n_best.parse().unwrap()
+    } else {
+        1
+    };
     let rcfile = if let Some(rcfile_option) = matches.get_one::<String>("rcfile") {
         Some(rcfile_option.as_str())
     } else {
         None
     };
+
+    let mut lines = String::new();
+    io::stdin().read_to_string(&mut lines).unwrap();
+    lines = lines.trim_end().to_string();
+
     let tokenizer = tokenizer::Tokenizer::new(rcfile).unwrap();
     for s in lines.split("\n") {
         if nbest == 1 {
