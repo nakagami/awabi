@@ -21,9 +21,7 @@
 *OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *SOFTWARE.
 */
-extern crate memmap;
-
-use memmap::{Mmap, MmapOptions};
+use memmap2::{Mmap, MmapOptions};
 use std::fs::File;
 use std::i16;
 use std::i32;
